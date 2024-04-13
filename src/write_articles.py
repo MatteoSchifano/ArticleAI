@@ -22,7 +22,7 @@ class BlogPostGenerator:
         max_length = 255
         if len(filename) > max_length:
             filename = filename[:max_length]
-        return filename + '.txt'
+        return filename + '.html'
 
     def generate_blog_post(self, keyword, messages = []):
         messages.append({"role": "system", "content": "You are a content writer expert in writing SEO-optimized blog posts."})
@@ -46,7 +46,7 @@ class BlogPostGenerator:
             file_path = os.path.join(self.output_directory, file_name)
 
             with open(file_path, 'w', encoding='utf-8') as file:
-                file.write(f"# {keyword}\n\n{blog_post_content}")
+                file.write(f"{blog_post_content}")
 
             print(f"Blog post for '{keyword}' saved to {file_path}")
 
