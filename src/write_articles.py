@@ -1,7 +1,8 @@
 import openai
 import os
 import re
-from dotenv import load_dotenv
+from src.config import OPENAI_API_KEY, LANGUAGE, OPENAI_MODEL
+
 
 class BlogPostGenerator:
     def __init__(self, messages, keywords, output_directory):
@@ -10,11 +11,10 @@ class BlogPostGenerator:
         self.output_directory = output_directory
 
         os.makedirs(self.output_directory, exist_ok=True)
-        load_dotenv()
 
-        self.api_key = os.getenv('OPENAI_API_KEY')
-        self.language = os.getenv('LANGUAGE')
-        self.model = os.getenv('OPENAI_MODEL')
+        self.api_key = OPENAI_API_KEY
+        self.language = LANGUAGE
+        self.model = OPENAI_MODEL
 
     def normalize_filename(self, title):
         filename = title.replace(' ', '_')
@@ -24,10 +24,13 @@ class BlogPostGenerator:
             filename = filename[:max_length]
         return filename + '.html'
 
-    def generate_blog_post(self, keyword, messages = []):
-        messages.append({"role": "system", "content": "You are a content writer expert in writing SEO-optimized blog posts."})
-        messages.append({"role": "system", "content": "Respond only with the blog post. Your output should NEVER contain your own output."})
-        messages.append({"role": "user", "content": f"Write an SEO-optimized 1000-word blog post in {self.language}, with SEO keyword: {keyword}."})
+    def generate_blog_post(self, keyword, messages=[]):
+        messages.append(
+            {"role": "system", "content": "You are a content writer expert in writing SEO-optimized blog posts."})
+        messages.append(
+            {"role": "system", "content": "Respond only with the blog post. Your output should NEVER contain your own output."})
+        messages.append(
+            {"role": "user", "content": f"Write an SEO-optimized 1000-word blog post in {self.language}, with SEO keyword: {keyword}."})
 
         client = openai.OpenAI(api_key=self.api_key)
         response = client.chat.completions.create(
@@ -39,7 +42,8 @@ class BlogPostGenerator:
 
     def write_articles(self):
         for keyword in self.keywords:
-            blog_post_content = self.generate_blog_post(keyword, messages=self.messages)
+            blog_post_content = self.generate_blog_post(
+                keyword, messages=self.messages)
 
             file_name = self.normalize_filename(keyword)
 
@@ -51,4 +55,3 @@ class BlogPostGenerator:
             print(f"Blog post for '{keyword}' saved to {file_path}")
 
         print("All blog posts have been saved.")
-
